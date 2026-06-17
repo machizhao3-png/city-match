@@ -1,4 +1,4 @@
-import { mockReport } from "@/lib/mock-report";
+import { generateCityReport } from "@/lib/ai";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -21,7 +21,27 @@ export async function POST(request: Request) {
     return invalidAnswers();
   }
 
-  return Response.json({ report: mockReport });
+  try {
+    const report = await generateCityReport(answers);
+    return Response.json({ report });
+  } catch (error) {
+    console.error("generate report failed", {
+      name: error instanceof Error ? error.name : typeof error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+
+    return Response.json(
+      {
+        error: "generate_report_failed",
+        message:
+          error instanceof Error
+            ? error.message
+            : "城市报告生成失败，请稍后再试。",
+      },
+      { status: 502 },
+    );
+  }
 }
 
 function invalidAnswers() {
