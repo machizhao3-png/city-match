@@ -220,9 +220,8 @@ export default function Home() {
 
       setReport(data.report);
     } catch (error) {
-      setGenerateError(
-        error instanceof Error ? error.message : "报告生成失败，请稍后再试。",
-      );
+      console.error("生成城市报告失败", error);
+      setGenerateError("模型开小差了，请稍后再试。");
     } finally {
       setIsGenerating(false);
     }
@@ -297,12 +296,18 @@ export default function Home() {
                 下一步我们会把你的答案交给 AI，让它从城市知识库里挑出一座最懂你的城市。
               </p>
 
+              {isGenerating ? (
+                <p className="mb-3 text-sm leading-6 text-[#7d6a5a]">
+                  AI 正在翻你的城市人格档案，通常需要 5-15 秒。
+                </p>
+              ) : null}
+
               <button
                 onClick={handleGenerateReport}
                 disabled={isGenerating}
                 className="mb-3 w-full rounded-2xl bg-[#d97745] px-5 py-4 font-semibold text-white shadow-sm transition hover:bg-[#c86835] active:scale-[0.99]"
               >
-                {isGenerating ? "生成中..." : "生成我的城市报告"}
+                {isGenerating ? "AI 正在匹配中..." : "生成我的城市报告"}
               </button>
 
               {generateError ? (
